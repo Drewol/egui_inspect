@@ -1,7 +1,7 @@
-use std::ops::Add;
 use crate::InspectNumber;
 use crate::InspectString;
 use egui::{Color32, Ui};
+use std::ops::Add;
 
 macro_rules! impl_inspect_float {
     ($($t:ty),+) => {
@@ -132,35 +132,45 @@ impl crate::EguiInspect for bool {
 
 impl<T: crate::EguiInspect, const N: usize> crate::EguiInspect for [T; N] {
     fn inspect(&self, label: &str, ui: &mut Ui) {
-        egui::CollapsingHeader::new(label.to_string().add(format!("[{}]", N).as_str())).show(ui, |ui| {
-            for item in self.iter() {
-                item.inspect("item", ui);
-            }
-        });
+        egui::CollapsingHeader::new(label.to_string().add(format!("[{}]", N).as_str())).show(
+            ui,
+            |ui| {
+                for item in self.iter() {
+                    item.inspect("item", ui);
+                }
+            },
+        );
     }
 
     fn inspect_mut(&mut self, label: &str, ui: &mut Ui) {
-        egui::CollapsingHeader::new(label.to_string().add(format!("[{}]", N).as_str())).show(ui, |ui| {
-            for item in self.iter_mut() {
-                item.inspect_mut("item", ui);
-            }
-        });
+        egui::CollapsingHeader::new(label.to_string().add(format!("[{}]", N).as_str())).show(
+            ui,
+            |ui| {
+                for item in self.iter_mut() {
+                    item.inspect_mut("item", ui);
+                }
+            },
+        );
     }
 }
 
 impl<T: crate::EguiInspect + Default> crate::EguiInspect for Vec<T> {
     fn inspect(&self, label: &str, ui: &mut Ui) {
-        egui::CollapsingHeader::new(label.to_string().add(format!("[{}]", self.len()).as_str())).show(ui, |ui| {
-            for item in self.iter() {
-                item.inspect("item", ui);
-            }
-        });
+        egui::CollapsingHeader::new(label.to_string().add(format!("[{}]", self.len()).as_str()))
+            .show(ui, |ui| {
+                for item in self.iter() {
+                    item.inspect("item", ui);
+                }
+            });
     }
 
     fn inspect_mut(&mut self, label: &str, ui: &mut Ui) {
         ui.horizontal_top(|ui| {
-            egui::CollapsingHeader::new(label.to_string().add(format!("[{}]", self.len()).as_str()))
-                .id_source(label).show(ui, |ui| {
+            egui::CollapsingHeader::new(
+                label.to_string().add(format!("[{}]", self.len()).as_str()),
+            )
+            .id_salt(label)
+            .show(ui, |ui| {
                 for item in self.iter_mut() {
                     item.inspect_mut("item", ui);
                 }
